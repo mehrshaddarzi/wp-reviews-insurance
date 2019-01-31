@@ -1,0 +1,11 @@
+{
+  "require": {
+    "php": ">=5.4",
+    "tareq1988/wordpress-settings-api-class": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "WP_REVIEWS_INSURANCE\\": ["includes/"]
+    }
+  }
+}

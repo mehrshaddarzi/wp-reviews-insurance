@@ -1,0 +1,144 @@
+/* Dashicon logo */
+.wps_actions span.dashicons-randomize {
+    font-size: 25px;
+    margin-left: 5px;
+    vertical-align: -4px;
+}
+
+/* Top Content wp list table */
+.wlt-top-content {
+    width: 95.5%;
+    min-height: 150px;
+    margin: 25px 10px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Color Style */
+.wps_actions .text-danger {
+    color: #DC3545;
+}
+
+.wps_actions .text-primary {
+    color: #007BFF;
+}
+
+.wps_actions .text-success {
+    color: #28A745;
+}
+
+.wps_actions .text-warning {
+    color: #c1950f;
+}
+
+.wps_actions .text-muted {
+    color: #6d6d6d;
+}
+
+/* add css Tooltip */
+.wps_actions .tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.wps_actions .cursor-pointer {
+    cursor: pointer;
+}
+
+/* Tooltip text */
+.wps_actions .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #fff;
+    color: #6f6f6f;
+    box-shadow: 1px 1px 1px #d6d6d6;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    bottom: 105%;
+    left: 50%;
+    margin-left: -60px;
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.wps_actions .tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+/* Row Action Color */
+.wps_actions .row-actions {
+    color: #9e9e9e;
+}
+
+/* Spinner Button*/
+.wps_spinner_btn {
+    display: inline-block;
+    margin-top: 5px;
+    margin-left: 8px;
+}
+
+/* Remove Wordpress Footer */
+#footer-left, #footer-upgrade {
+    display: none;
+}
+
+/* Jquery Confrim */
+.jconfirm .jconfirm-holder {
+    max-height: 100%;
+    padding: 80px 0;
+    width: 25%;
+    margin: 0px auto;
+}
+
+/* Status dialog */
+.wpsa-status-dialog .wp-loading {
+    text-align: center;
+    margin: 60px auto;
+}
+
+/* Ticket System */
+.log span { color:#d72626 !important; display:inline !important; }
+label { width: 100px;}
+.buttonText { font-size:11px; }
+label[for=ticket_attachment] { width:130px; }
+.media-body p { padding:0px; }
+.clearfix {
+    clear:both;
+}
+.media-object {
+    display: block;
+}
+.media-object.img-thumbnail {
+    max-width: none;
+}
+.media-right,
+.media > .pull-right {
+    padding-left: 10px;
+}
+.media-left,
+.media > .pull-left {
+    padding-right: 10px;
+}
+.media-left,
+.media-right,
+.media-body {
+    display: table-cell;
+    vertical-align: top;
+}
+.media-middle {
+    vertical-align: middle;
+}
+.media-bottom {
+    vertical-align: bottom;
+}
+.media-heading {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.media-list {
+    padding-left: 0;
+    list-style: none;
+}
