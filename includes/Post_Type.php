@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_REVIEWS_INSURANCE;
 
 /*
@@ -155,10 +156,16 @@ class Post_Type {
 	 */
 	public function column_post_table( $column, $post_id ) {
 		/*
+		 * ID
+		 */
+		if ( $column == 'id' ) {
+			echo $post_id;
+		}
+		/*
 		 * Number Reviews
 		 */
 		if ( $column == 'number_reviews' ) {
-			echo number_format( Helper::get_number_valid_reviews( $post_id ) );
+			echo '<a href="' . add_query_arg( array( 'p' => $post_id ), admin_url( 'edit-comments.php' ) ) . '">' . number_format( Helper::get_number_valid_reviews( $post_id ) ) . '</a>';
 		}
 		/*
 		 * Star Rate
@@ -183,6 +190,10 @@ class Post_Type {
 	 * @return mixed
 	 */
 	public function column_post_type( $columns ) {
+		/*
+		* insurance ID
+		*/
+		$columns['id'] = __( 'Insurance ID', 'wp-reviews-insurance' );
 		/*
 		* Add Comment Type column
 		*/
@@ -218,6 +229,6 @@ class Post_Type {
 			$query->set( 'orderby', 'comment_count' );
 		}
 	}
-	
-	
+
+
 }
