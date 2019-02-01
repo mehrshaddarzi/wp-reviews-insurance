@@ -17,7 +17,7 @@ class WP_REVIEWS_INSURANCE {
 	 * Plugin instance.
 	 *
 	 * @see get_instance()
-	 * @type object
+	 * @status Core
 	 */
 	protected static $_instance = null;
 
@@ -26,13 +26,24 @@ class WP_REVIEWS_INSURANCE {
 	 *
 	 * @var string
 	 * @default production
+	 * @status Core
 	 */
 	public static $ENVIRONMENT = 'development';
+
+	/**
+	 * Use Template Engine
+	 * if you want use template Engine Please add dir name
+	 *
+	 * @var string / dir name
+	 * @status Core
+	 */
+	public static $Template_Engine = 'wp-reviews';
 
 	/**
 	 * URL to this plugin's directory.
 	 *
 	 * @type string
+	 * @status Core
 	 */
 	public static $plugin_url;
 
@@ -40,6 +51,7 @@ class WP_REVIEWS_INSURANCE {
 	 * Path to this plugin's directory.
 	 *
 	 * @type string
+	 * @status Core
 	 */
 	public static $plugin_path;
 
@@ -47,11 +59,15 @@ class WP_REVIEWS_INSURANCE {
 	 * Path to this plugin's directory.
 	 *
 	 * @type string
+	 * @status Core
 	 */
 	public static $plugin_version;
 
 	/**
 	 * Plugin Option Store
+	 *
+	 * @var array
+	 * @status Optional
 	 */
 	public static $option;
 
@@ -62,7 +78,7 @@ class WP_REVIEWS_INSURANCE {
 	 * @since   2012.09.13
 	 * @return  object of this class
 	 */
-	public static function get_instance() {
+	public static function instance() {
 		null === self::$_instance and self::$_instance = new self;
 		return self::$_instance;
 	}
@@ -73,7 +89,7 @@ class WP_REVIEWS_INSURANCE {
 	 * @wp-hook plugins_loaded
 	 * @return  void
 	 */
-	public function plugin_setup() {
+	public function init() {
 
 		//Get plugin Data information
 		if ( ! function_exists( 'get_plugin_data' ) ) {
@@ -98,7 +114,7 @@ class WP_REVIEWS_INSURANCE {
 		include_once dirname( __FILE__ ) . '/vendor/autoload.php';
 
 		//Load Class
-		$autoload = array( 'Post_Type', 'Core\\Admin_Setting_Api', 'Admin_Page', 'Front', 'Comment', 'Ajax', 'Core\\Utility' );
+		$autoload = array( 'Post_Type', 'Settings', 'Admin_Page', 'Front', 'Ajax', 'Core\\Utility' );
 		foreach ( $autoload as $class ) {
 			$class_name = '\WP_REVIEWS_INSURANCE\\' . $class;
 			new $class_name;
@@ -139,7 +155,7 @@ class WP_REVIEWS_INSURANCE {
 }
 
 //Load Plugin
-add_action( 'plugins_loaded', array( WP_REVIEWS_INSURANCE::get_instance(), 'plugin_setup' ) );
+add_action( 'plugins_loaded', array( WP_REVIEWS_INSURANCE::instance(), 'init' ) );
 
 //Use Activation
 register_activation_hook( __FILE__, array( 'WP_REVIEWS_INSURANCE', 'activate' ) );

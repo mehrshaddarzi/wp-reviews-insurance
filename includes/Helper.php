@@ -12,17 +12,6 @@ use WP_REVIEWS_INSURANCE\Core\WP_Mail;
 class Helper {
 
 	/**
-	 * Send Auth Email
-	 *
-	 * @param $email
-	 * @param $user_name
-	 */
-	public static function send_auth_mail( $email, $user_name ) {
-
-	}
-
-
-	/**
 	 * Search IP and User id in comment
 	 */
 	public static function search_in_comments() {
@@ -49,7 +38,6 @@ class Helper {
 		$comments      = $comment_query->query( $args );
 		return $comments;
 	}
-
 
 	/**
 	 * Check Auth comment Code

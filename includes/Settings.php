@@ -1,13 +1,14 @@
 <?php
 
-namespace WP_REVIEWS_INSURANCE\Core;
+namespace WP_REVIEWS_INSURANCE;
+
+use WP_REVIEWS_INSURANCE\Core\SettingAPI;
 
 /**
- * Class Admin_Setting_Api
- * @package WP_REVIEWS_INSURANCE
+ * Class Settings
  * @see https://github.com/tareq1988/wordpress-settings-api-class
  */
-class Admin_Setting_Api {
+class Settings {
 
 	/**
 	 * Plugin Option name
@@ -67,7 +68,11 @@ class Admin_Setting_Api {
 			array(
 				'id'    => 'wp_reviews_insurance_opt',
 				'title' => __( 'General', 'wp-reviews-insurance' )
-			)
+			),
+			array(
+				'id'    => 'wp_plugin_help',
+				'title' => __( 'Help', 'wp-reviews-insurance' )
+			),
 		);
 
 		$fields = array(
@@ -126,21 +131,8 @@ class Admin_Setting_Api {
 					)
 				),
 				array(
-					'name'    => 'email_subject',
-					'label'   => __( 'Email subject for Confirm', 'wp-reviews-insurance' ),
-					'type'    => 'text',
-					'default' => 'confirm your reviews',
-					'desc'    => 'Use This Shortcode :</br> [fullname] : User Name<br /> [sitename] : Site Name',
-				),
-				array(
-					'name'    => 'email_thanks_text',
-					'label'   => __( 'Thanks Confirm Text', 'wp-reviews-insurance' ),
-					'type'    => 'text',
-					'default' => 'Thank You For Your Reviews.',
-				),
-				array(
 					'name'    => 'star_color',
-					'label'   => __( 'Star Rate color', 'wp-reviews-insurance' ),
+					'label'   => __( 'Star Rating color', 'wp-reviews-insurance' ),
 					'type'    => 'color',
 					'default' => '#f2b01e'
 				),
@@ -156,12 +148,58 @@ class Admin_Setting_Api {
 					'type'    => 'textarea',
 					'default' => 'Each user can only have one vote'
 				),
-
-
+				array(
+					'name'    => 'email_subject',
+					'label'   => __( 'Email subject for Confirm', 'wp-reviews-insurance' ),
+					'type'    => 'text',
+					'default' => 'confirm your reviews',
+					'desc'    => 'Use This Shortcode :</br> [fullname] : User Name<br /> [sitename] : Site Name',
+				),
+				array(
+					'name'    => 'email_thanks_text',
+					'label'   => __( 'Thanks Confirm Text', 'wp-reviews-insurance' ),
+					'type'    => 'text',
+					'default' => 'Thank You For Your Reviews.',
+				),
+			),
+			'wp_plugin_help'           => array(
+				array(
+					'name'  => 'html_help_shortcode',
+					'label' => 'ShortCode List',
+					'desc'  => 'You Can using bottom shortcode in wordpress : <br /><br />
+ <table border="0" class="widefat">
+  <tr>
+ <td> [reviews-form]</td>
+ <td>For Show Review Form</td>
+</tr>
+ <tr>
+ <td>[reviews-insurance]</td>
+ <td>List Of insurance With Rating Averag e.g : [reviews-insurance order="DESC"]</td>
+</tr>
+<tr>
+ <td>[reviews-list]</td>
+ <td>List Of Review For Custom insurance . e.g : [reviews-list insurance_id=10 order="ASC" number="50"]</td>
+</tr>
+</table>
+',
+					'type'  => 'html'
+				),
+				array(
+					'name'  => 'html_help_custom template',
+					'label' => 'Custom Template',
+					'desc'  => 'for Custom Template according to your theme style : <br /> <br />
+ <table border="0" class="widefat">
+  <tr>
+  <td>Copy `template` folder to root dir theme and rename folder to `wp-reviews`. then change your html code. :)</td>
+  </tr>
+  </table>
+',
+					'type'  => 'html'
+				),
 			)
 		);
 
-		$this->setting = new \WeDevs_Settings_API();
+		$this->setting = new SettingAPI();
 
 		//set sections and fields
 		$this->setting->set_sections( $sections );
@@ -170,6 +208,5 @@ class Admin_Setting_Api {
 		//initialize them
 		$this->setting->admin_init();
 	}
-
 
 }

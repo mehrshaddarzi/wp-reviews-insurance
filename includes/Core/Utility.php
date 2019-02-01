@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_REVIEWS_INSURANCE\Core;
 class Utility {
 
@@ -19,6 +20,12 @@ class Utility {
 
 		//Email Template
 		$email_template = wp_normalize_path( \WP_REVIEWS_INSURANCE::$plugin_path . '/template/email.php' );
+		if ( trim( \WP_REVIEWS_INSURANCE::$Template_Engine ) != "" ) {
+			$template = wp_normalize_path( path_join( get_template_directory(), '/includes/my_file.php' ) );
+			if ( file_exists( $template ) ) {
+				$email_template = $template;
+			}
+		}
 
 		//Get option Send Mail
 		$opt = get_option( 'wp_reviews_email_opt' );
@@ -140,9 +147,32 @@ class Utility {
 		return $list;
 	}
 
+	/*------------------------------------------------------------
+	 - WP Admin Ui
+	------------------------------------------------------------/
 
-
-
+	/**
+	 * Show Admin Wordpress Ui Notice
+	 *
+	 * @param $text
+	 * @param string $model
+	 * @param bool $close_button
+	 * @param bool $echo
+	 * @param string $style_extra
+	 * @return string
+	 */
+	public static function wp_admin_notice( $text, $model = "info", $close_button = true, $echo = true, $style_extra = 'padding:12px;' ) {
+		$text = '
+        <div class="notice notice-' . $model . '' . ( $close_button === true ? " is-dismissible" : "" ) . '">
+           <div style="' . $style_extra . '">' . $text . '</div>
+        </div>
+        ';
+		if ( $echo ) {
+			echo $text;
+		} else {
+			return $text;
+		}
+	}
 
 
 }

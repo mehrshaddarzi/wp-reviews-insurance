@@ -1,9 +1,11 @@
 <?php
 
 namespace WP_REVIEWS_INSURANCE;
-
 use WP_REVIEWS_INSURANCE;
 
+/*
+ * Ajax Method wordpress
+ */
 class Ajax {
 
 

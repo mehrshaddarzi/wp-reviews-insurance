@@ -1,5 +1,9 @@
 <?php
 namespace WP_REVIEWS_INSURANCE\Core;
+
+/**
+ * Wordpress Template System For Use in Plugins
+ */
 class Template {
 
 	protected static $_instance = NULL;

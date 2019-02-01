@@ -25,6 +25,8 @@ class Front {
 		 * short Code Show Review form
 		 */
 		add_shortcode( 'reviews-form', array( $this, 'reviews_form' ) );
+		add_shortcode( 'reviews-insurance', array( $this, 'reviews_insurance' ) );
+		add_shortcode( 'reviews-list', array( $this, 'reviews_list' ) );
 		/*
 		 * Add Custom Meta Fo Comment
 		 */
@@ -33,8 +35,6 @@ class Front {
 		 * Confirm Review User
 		 */
 		add_action( 'wp_footer', array( $this, 'check_auth_reviews' ) );
-
-
 	}
 
 	/**
@@ -79,6 +79,79 @@ class Front {
 		$thank_you = WP_REVIEWS_INSURANCE::$option['thanks_text'];
 
 		return Template::get()->shortlink_get_template( 'reviews-form.php', compact( 'insurance', 'full_name', 'user_email', 'thank_you' ) );
+	}
+
+	/**
+	 * Show Review Company List
+	 */
+	public function reviews_insurance( $atts ) {
+
+		//Prepare ShortCode
+		$atts = shortcode_atts( array(
+			'order' => 'DESC'
+		), $atts, 'reviews-insurance' );
+
+		//Get List Post
+		$list  = array();
+		$args  = array(
+			'post_type'      => Post_Type::$post_type,
+			'post_status'    => 'publish',
+			'posts_per_page' => '-1',
+			'order'          => $atts['order'],
+			'fields'         => 'ids'
+		);
+		$query = new \WP_Query( $args );
+		foreach ( $query->posts as $ID ) {
+			$list[] = array(
+				'title' => get_the_title( $ID ),
+				'rate'  => Helper::get_average_rating( $ID )
+			);
+		}
+
+		return Template::get()->shortlink_get_template( 'reviews-insurance.php', compact( 'list' ) );
+	}
+
+	/**
+	 * Show Reviews List
+	 */
+	public function reviews_list( $atts ) {
+		global $post;
+
+		//Prepare ShortCode
+		$atts = shortcode_atts( array(
+			'order'        => 'DESC',
+			'insurance_id' => $post->ID,
+			'number'       => false,
+		), $atts, 'reviews-insurance' );
+
+		//Get List Post
+		$list = array();
+
+		// WP_Comment_Query arguments
+		$args          = array(
+			'post_type'  => Post_Type::$post_type,
+			'orderby'    => 'comment_date',
+			'status'     => 'approve',
+			'order'      => $atts['order'],
+			'post_id'    => $atts['insurance_id'],
+			'number'     => false,
+			'meta_query' => array(
+				array(
+					'key'     => 'comment_approve_user',
+					'value'   => 'yes',
+					'compare' => '='
+				)
+			)
+		);
+		$comment_query = new \WP_Comment_Query;
+		$comments      = $comment_query->query( $args );
+		foreach ( $comments as $comment ) {
+			$score                        = get_comment_meta( $comment->comment_ID, 'score', true );
+			$list[ $comment->comment_ID ] = array_merge( array( 'score' => $score ), get_object_vars( $comment ) );
+		}
+
+
+		return Template::get()->shortlink_get_template( 'reviews-list.php', compact( 'list' ) );
 	}
 
 	/*

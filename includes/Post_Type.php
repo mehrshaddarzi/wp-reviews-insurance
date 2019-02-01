@@ -1,7 +1,9 @@
 <?php
 namespace WP_REVIEWS_INSURANCE;
 
-
+/*
+ * Define Post Type
+ */
 class Post_Type {
 
 	public static $post_type;
@@ -39,7 +41,13 @@ class Post_Type {
 		 * Flush Rewrite in Not finding Post Type
 		 */
 		add_action( 'init', array( $this, 'flush_rewrite' ), 999 );
-
+		/*
+		 * Add column Post Type
+		 */
+		add_action( 'manage_' . Post_Type::$post_type . '_posts_custom_column', array( $this, 'column_post_table' ), 10, 2 );
+		add_filter( 'manage_' . Post_Type::$post_type . '_posts_columns', array( $this, 'column_post_type' ) );
+		add_filter( 'manage_edit-' . Post_Type::$post_type . '_sortable_columns', array( $this, 'sortable_column' ) );
+		add_action( 'pre_get_posts', array( $this, 'action_type_orderby' ) );
 	}
 
 	/*
@@ -137,6 +145,78 @@ class Post_Type {
 		}
 
 		return $input;
+	}
+
+	/**
+	 * Add Column Post Type
+	 *
+	 * @param $column
+	 * @param $post_id
+	 */
+	public function column_post_table( $column, $post_id ) {
+		/*
+		 * Number Reviews
+		 */
+		if ( $column == 'number_reviews' ) {
+			echo number_format( Helper::get_number_valid_reviews( $post_id ) );
+		}
+		/*
+		 * Star Rate
+		 */
+		if ( $column == 'rate' ) {
+			echo '
+		<div class="post_score_' . $post_id . '"></div>
+		<script>
+			jQuery(document).ready(function(){
+			   jQuery(".post_score_' . $post_id . '").raty({starType: "i", readOnly: true, score: ' . Helper::get_average_rating( $post_id ) . ',half: false,halfShow: true});
+			});
+		</script>
+		';
+		}
+
+	}
+
+	/**
+	 * Column Post Type Table Add
+	 *
+	 * @param $columns
+	 * @return mixed
+	 */
+	public function column_post_type( $columns ) {
+		/*
+		* Add Comment Type column
+		*/
+		$columns['number_reviews'] = __( 'Number reviews', 'wp-reviews-insurance' );
+		/*
+		 * Rate
+		 */
+		$columns['rate'] = __( 'Average rating', 'wp-reviews-insurance' );
+		/*
+		 * Remove Comment
+		 */
+		unset( $columns['comments'] );
+		return $columns;
+	}
+
+	/*
+	* Add Sortable Column in Table
+	*/
+	public function sortable_column( $columns ) {
+		$columns['number_reviews'] = 'comment_count';
+		return $columns;
+	}
+
+	/*
+	 * Redirect Type Order Process
+	 */
+	public function action_type_orderby( $query ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+		$orderby = $query->get( 'orderby' );
+		if ( 'comment_count' == $orderby ) {
+			$query->set( 'orderby', 'comment_count' );
+		}
 	}
 	
 	
