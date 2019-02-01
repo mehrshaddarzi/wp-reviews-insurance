@@ -1,16 +1,12 @@
 <?php
 
-namespace WP_REVIEWS_INSURANCE;
+namespace WP_REVIEWS_INSURANCE\Core;
 
 /**
  * WP_Mail
  *
  * A simple class for creating and
  * sending Emails using WordPress
- *
- *
- * @license https://github.com/anthonybudd/WP_Mail
- * @author     AnthonyBudd <anthonybudd94@gmail.com>
  */
 Class WP_Mail {
 

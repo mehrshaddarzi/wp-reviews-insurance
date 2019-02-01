@@ -30,3 +30,59 @@
 .ltr {
     direction: ltr;
 }
+
+/* Plugin Css */
+.wp-insurance-form {
+    padding: 5px;
+    margin: 20px 0px;
+}
+
+.wp-insurance-form table, .wp-insurance-form table tr, .wp-insurance-form table td {
+    border: 0px !important;
+}
+
+.wp-insurance-form textarea {
+    min-height: 200px;
+}
+
+.wp-insurance-form input[type=submit] {
+    -webkit-appearance: button;
+    background-color: #333;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.7917em 1.5em;
+}
+
+.wp-insurance-form .alert {
+    background: #e3e3e3;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.wp-insurance-form .alert.success {
+    background: #7bc341;
+    color: #fff;
+}
+
+.wp-insurance-form .alert.error {
+    background: #c3403c;
+    color: #fff;
+}
+
+/* Confrim box */
+.confirm-review-alert {
+    background: #72a3ec;
+    min-height: 70px;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    top: 0px;
+    z-index: 999999999999;
+    width: 100%;
+    line-height: 65px;
+}

@@ -3,7 +3,7 @@
 namespace WP_REVIEWS_INSURANCE;
 
 use WP_REVIEWS_INSURANCE;
-use WP_REVIEWS_INSURANCE\WP_List_Table\Reviews as wlt_order;
+use WP_REVIEWS_INSURANCE\Core\Admin_Setting_Api;
 
 class Admin_Page {
 
@@ -13,45 +13,34 @@ class Admin_Page {
 	public static $admin_page_slug;
 
 	/**
-	 * List OF Variable For WP_List_Table
-	 */
-	public $reviews_obj;
-
-	/**
-	 * List Pages Slug in This Plugin
-	 */
-	public static $pages;
-
-
-	/**
 	 * Admin_Page constructor.
 	 */
 	public function __construct() {
-
-		//Set Variable
+		/*
+		 * Set Page slug Admin
+		 */
 		self::$admin_page_slug = 'reviews';
-		self::$pages           = array( "reviews" );
-
-		//Add Admin Menu Wordpress
+		/*
+		 * Setup Admin Menu
+		 */
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-
-		//Set Screen Option
-		add_filter( 'set-screen-option', array( $this, 'set_screen' ), 10, 3 );
-
-		//Add Script to Admin Wordpress
+		/*
+		 * Register Script in Admin Area
+		 */
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
-
-		//Set Admin Notice and Custom Redirect and Custom Js/css for Per Page
-		foreach ( self::$pages as $page_slug ) {
-			add_action( 'admin_notices', array( $this, 'admin_notice_' . $page_slug ) );
-			add_action( 'admin_init', array( $this, 'wlt_redirect_' . $page_slug ) );
-			add_action( 'admin_head', array( $this, 'wlt_script_' . $page_slug ) );
-			add_action( 'wlt_top_content', array( $this, 'wlt_top_' . $page_slug ) );
-		}
-
-		//Remove All Notice Another Plugin
-		add_action( 'admin_print_scripts', array( $this, 'prevent_admin_notices_plugins' ) );
-
+		/*
+		 * Add column To comment List Table
+		 */
+		add_filter( 'manage_edit-comments_columns', array( $this, 'add_comments_columns' ) );
+		add_action( 'manage_comments_custom_column', array( $this, 'add_comment_columns_content' ), 10, 2 );
+		add_action( 'admin_footer', array( $this, 'add_jquery_raty' ) );
+		/*
+		 * Add column Post Type
+		 */
+		add_action( 'manage_' . Post_Type::$post_type . '_posts_custom_column', array( $this, 'column_post_table' ), 10, 2 );
+		add_filter( 'manage_' . Post_Type::$post_type . '_posts_columns', array( $this, 'column_post_type' ) );
+		add_filter( 'manage_edit-' . Post_Type::$post_type . '_sortable_columns', array( $this, 'sortable_column' ) );
+		add_action( 'pre_get_posts', array( $this, 'action_type_orderby' ) );
 	}
 
 	/**
@@ -81,197 +70,184 @@ class Admin_Page {
 	}
 
 	/**
-	 * Prevent and Disable all admin Notice
-	 */
-	public function prevent_admin_notices_plugins() {
-		global $wp_filter, $pagenow;
-
-		if ( $pagenow == "admin.php" and isset( $_GET['page'] ) and in_array( $_GET['page'], self::$pages ) and ! isset( $_GET['alert'] ) ) {
-			if ( isset( $wp_filter['user_admin_notices'] ) ) {
-				unset( $wp_filter['user_admin_notices'] );
-			}
-			if ( isset( $wp_filter['admin_notices'] ) ) {
-				unset( $wp_filter['admin_notices'] );
-			}
-			if ( isset( $wp_filter['all_admin_notices'] ) ) {
-				unset( $wp_filter['all_admin_notices'] );
-			}
-		}
-	}
-
-	/**
 	 * Load assets file in admin
 	 */
 	public function admin_assets() {
 		global $pagenow;
 
 		//List Allow This Script
-		if ( $pagenow == "admin.php" and isset( $_GET['page'] ) and in_array( $_GET['page'], self::$pages ) ) {
+		if ( $pagenow == "edit-comments.php" || $pagenow == "edit.php" ) {
 
-//			//Load Jquery Confirm
-//			wp_enqueue_style( 'jQuery-confirm', WP_REVIEWS_INSURANCE::$plugin_url . '/asset/admin/css/jquery-confirm.min.css', true, '3.3.0' );
-//			wp_enqueue_script( 'jQuery-confirm', WP_REVIEWS_INSURANCE::$plugin_url . '/asset/admin/js/jquery-confirm.min.js', array( 'jquery' ), '3.3.0', true );
-//
-//			//Load init Script
-//			wp_enqueue_style( 'wp-online-style', WP_REVIEWS_INSURANCE::$plugin_url . '/asset/admin/css/style.css', true, WP_REVIEWS_INSURANCE::$plugin_version );
-//			wp_enqueue_script( 'wp-online-js', WP_REVIEWS_INSURANCE::$plugin_url . '/asset/admin/js/script.js', array( 'jquery' ), WP_REVIEWS_INSURANCE::$plugin_version, true );
-//			wp_localize_script( 'wp-online-js', 'wp_options_js', array(
-//				'ajax'        => admin_url( "admin-ajax.php" ),
-//				'is_rtl'      => ( is_rtl() ? 1 : 0 ),
-//				'loading_img' => admin_url( "/images/spinner.gif" ),
-//			) );
+			//Jquery Raty
+			//@see https://github.com/wbotelhos/raty
+			wp_enqueue_style( 'jquery-raty', WP_REVIEWS_INSURANCE::$plugin_url . '/asset/jquery-raty/jquery.raty.css', array(), WP_REVIEWS_INSURANCE::$plugin_version, 'all' );
+			wp_enqueue_script( 'jquery-raty', WP_REVIEWS_INSURANCE::$plugin_url . '/asset/jquery-raty/jquery.raty.js', array( 'jquery' ), WP_REVIEWS_INSURANCE::$plugin_version, false );
+
 		}
 
-	}
-
-	/**
-	 * Screen Option
-	 *
-	 * @param $status
-	 * @param $option
-	 * @param $value
-	 * @return mixed
-	 */
-	public static function set_screen( $status, $option, $value ) {
-		return $value;
 	}
 
 	/**
 	 * Set Admin Menu
 	 */
 	public function admin_menu() {
-
-		$post_type = add_submenu_page( 'edit.php?post_type=' . Post_Type::$post_type, __( 'Reviews', 'wp-reviews-insurance' ), __( 'Reviews', 'wp-reviews-insurance' ), 'manage_options', self::$admin_page_slug, array( $this, 'reviews' ) );
-		add_submenu_page( 'edit.php?post_type=' . Post_Type::$post_type, __( 'Setting', 'wp-reviews-insurance' ), __( 'Setting', 'wp-reviews-insurance' ), 'manage_options', 'wp_reviews_option', array( Admin_Setting_Api::instance(), 'wedevs_plugin_page' ) );
-
-		//Set Load Action For WP_List_Table
-		add_action( "load-$post_type", array( $this, 'screen_option_order' ) );
+		add_submenu_page( 'edit.php?post_type=' . Post_Type::$post_type, __( 'Settings', 'wp-reviews-insurance' ), __( 'Settings', 'wp-reviews-insurance' ), 'manage_options', 'wp_reviews_option', array( Admin_Setting_Api::instance(), 'wedevs_plugin_page' ) );
 	}
 
+	/**
+	 * Comment column
+	 *
+	 * @param $my_cols
+	 * @return array
+	 */
+	public function add_comments_columns( $my_cols ) {
 
+		//Add new Column
+		$columns = array(
+			'wp_reviews_rating' => __( 'Reviews Rating', 'wp-reviews-insurance' ),
+			'confirm_user'      => __( 'Confirm By User', 'wp-reviews-insurance' ),
+		);
+		$my_cols = array_slice( $my_cols, 0, 3, true ) + $columns + array_slice( $my_cols, 3, null, true );
 
-	/**=============================================================================== ORDER
-	 * = Reviews WP_LIST_TABLE
-	 * ================================================================================= */
+		// if you want to remove a column, you can just use:
+		// unset( $my_cols['response'] );
 
-	//Screen Option
-	public function screen_option_order() {
-
-		//Set Screen Option
-		$option = 'per_page';
-		$args   = array( 'label' => __( "تعداد نمایش در صفحه", '' ), 'default' => 10, 'option' => 'order_per_page' ); //options is user Meta
-		add_screen_option( $option, $args );
-
-		//Load WP_List_Table
-		$this->order_obj = new wlt_order();
-		$this->order_obj->prepare_items();
+		// return the result
+		return $my_cols;
 	}
 
-	//Order Admin Page
-	public function reviews() {
-		if ( ! isset( $_GET['method'] ) ) {
-
-			//Show Wp List Table
-			Admin_Ui::wp_list_table( $this->order_obj, "cart", get_admin_page_title(), array(), true );
-		} else {
-
-		}
-	}
-
-	//Admin Notice
-	public function admin_notice_reviews() {
-		if ( self::in_page( 'order' ) and isset( $_GET['alert'] ) ) {
-			switch ( $_GET['alert'] ) {
-
-				//Delete Alert
-				case "delete":
-					Admin_Ui::wp_admin_notice( __( "آیتم های انتخابی با موفقیت حذف گردید", 'wp-statistics-actions' ), "success" );
-					break;
-
-				//Change status
-				case "change-status":
-					Admin_Ui::wp_admin_notice( __( "تغییر وضعیت سفارش با موفقیت انجام شد", 'wp-statistics-actions' ), "success" );
-					break;
-
-			}
-		}
-	}
-
-	//Custom Script css/Js
-	public function wlt_script_reviews() {
-		if ( self::in_page( 'order' ) ) {
-			echo '<style>table.widefat th.column-title {width: 260px;}</style>';
-		}
-	}
-
-	//Top content Wp List Table
-	public function wlt_top_reviews() {
-		if ( self::in_page( 'order' ) and isset( $_GET['top'] ) ) {
-
-			//Top Content for Status
-			if ( $_GET['top'] == "change-status" ) {
-				?>
-                <div class="wlt-top-content"><h2>تغییر وضعیت سفارش</h2>
-                <form action="" method="post">
-                <table class="form-table">
-                    <tbody>
-                    <tr class="user-role-wrap">
-                        <th><label for="role">تغییر وضعیت به</label></th>
-                        <td>
-                            <select name="new-status">
-								<?php
-								for ( $i = 1; $i <= 9; $i ++ ) {
-									echo '<option value="' . $i . '"' . selected( $_GET['status'], $i, true ) . '>' . Helper::show_status( $i ) . '</option>';
-								}
-								?>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr class="user-role-wrap">
-                        <th><label for="role">اطلاع رسانی شود به کاربر ؟</label></th>
-                        <td>
-                            <select name="is-notification">
-                                <option value="yes">آری</option>
-                                <option value="no">خیر</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <input type="hidden" name="order_id" value="<?php echo $_GET['order_id']; ?>">
-                    </tbody>
-                </table>
-				<?php
-				submit_button( "تغییر وضعیت" );
-				echo '</form></div>';
-
-			}
-
-		}
-	}
-
-	//Redirect Process
-	public function wlt_redirect_reviews() {
-		//Current Page Slug
-		$page_slug = 'order';
-		if ( self::in_page( $page_slug ) and ! isset( $_GET['method'] ) ) {
-
-			//Redirect For $_POST Form Performance
-			foreach ( array( "s", "user" ) as $post ) {
-				if ( isset( $_POST[ $post ] ) and ! empty( $_POST[ $post ] ) ) {
-					$args = array( 'page' => $page_slug, $post => str_ireplace( " ", "+", $_POST[ $post ] ) );
-					if ( isset( $_GET['filter'] ) ) {
-						$args['filter'] = $_GET['filter'];
+	/**
+	 * Comment Column Content
+	 *
+	 * @param $column
+	 * @param $comment_ID
+	 */
+	public function add_comment_columns_content( $column, $comment_ID ) {
+		global $comment;
+		switch ( $column ) :
+			case 'wp_reviews_rating' :
+				{
+					if ( get_post_type( $comment->comment_post_ID ) == Post_Type::$post_type ) {
+						$score = get_comment_meta( $comment->comment_ID, 'score', true );
+						if ( is_numeric( $score ) and $score > 0 ) {
+							echo '
+						<div class="comment_score_' . $comment->comment_ID . '"></div>
+						<script>
+							jQuery(document).ready(function(){
+							   jQuery(".comment_score_' . $comment->comment_ID . '").raty({starType: "i", readOnly: true, score: ' . $score . '});
+							});
+						</script>
+						';
+						} else {
+							echo '_';
+						}
+					} else {
+						echo '_';
 					}
-					wp_redirect( add_query_arg( $args, admin_url( "admin.php" ) ) );
-					exit;
+					break;
 				}
-			}
+			case 'confirm_user':
+				{
+					if ( get_post_type( $comment->comment_post_ID ) == Post_Type::$post_type ) {
+						$user_auth = get_comment_meta( $comment->comment_ID, 'comment_approve_user', true );
+						if ( ! empty( $user_auth ) ) {
+							echo 'No';
+						} else {
+							echo 'Yes';
+						}
+					} else {
+						echo '_';
+					}
+					break;
+				}
+		endswitch;
+	}
 
-			//Remove Admin Notice From Pagination
-			if ( isset( $_GET['alert'] ) and isset( $_GET['paged'] ) ) {
-				wp_redirect( remove_query_arg( array( 'alert' ) ) );
-				exit;
-			}
+	/**
+	 * Add Jquery Raty Admin Footer
+	 */
+	public function add_jquery_raty() {
+		global $pagenow;
 
+		if ( $pagenow == "edit-comments.php" || $pagenow == "edit.php" ) {
+			echo '
+			<style>
+			.cancel-on-png, .cancel-off-png, .star-on-png, .star-off-png, .star-half-png {color: ' . WP_REVIEWS_INSURANCE::$option["star_color"] . '}
+			</style>
+			';
+		}
+	}
+
+
+	/**
+	 * Add Column Post Type
+	 *
+	 * @param $column
+	 * @param $post_id
+	 */
+	public function column_post_table( $column, $post_id ) {
+		/*
+		 * Number Reviews
+		 */
+		if ( $column == 'number_reviews' ) {
+			echo number_format( Helper::get_number_valid_reviews( $post_id ) );
+		}
+		/*
+		 * Star Rate
+		 */
+		if ( $column == 'rate' ) {
+			echo '
+		<div class="post_score_' . $post_id . '"></div>
+		<script>
+			jQuery(document).ready(function(){
+			   jQuery(".post_score_' . $post_id . '").raty({starType: "i", readOnly: true, score: ' . Helper::get_average_rating( $post_id ) . ',half: false,halfShow: true});
+			});
+		</script>
+		';
+		}
+
+	}
+
+	/**
+	 * Column Post Type Table Add
+	 *
+	 * @param $columns
+	 * @return mixed
+	 */
+	public function column_post_type( $columns ) {
+		/*
+		* Add Comment Type column
+		*/
+		$columns['number_reviews'] = __( 'Number reviews', 'wp-reviews-insurance' );
+		/*
+		 * Rate
+		 */
+		$columns['rate'] = __( 'Average rating', 'wp-reviews-insurance' );
+		/*
+		 * Remove Comment
+		 */
+		unset( $columns['comments'] );
+		return $columns;
+	}
+
+	/*
+	* Add Sortable Column in Table
+	*/
+	public function sortable_column( $columns ) {
+		$columns['number_reviews'] = 'comment_count';
+		return $columns;
+	}
+
+	/*
+	 * Redirect Type Order Process
+	 */
+	public function action_type_orderby( $query ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+		$orderby = $query->get( 'orderby' );
+		if ( 'comment_count' == $orderby ) {
+			$query->set( 'orderby', 'comment_count' );
 		}
 	}
 

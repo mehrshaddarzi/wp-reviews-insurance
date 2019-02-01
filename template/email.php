@@ -377,9 +377,15 @@
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td>
-                                        <p align="center">
-                                            <img src="<?php echo $logo; ?>" style="display: block;margin: 20px auto">
-                                        </p><br/>
+										<?php
+										if ( trim( $logo ) != "" ) {
+											?>
+                                            <p align="center">
+                                                <img src="<?php echo $logo; ?>" style="display: block;margin: 20px auto">
+                                            </p><br/>
+											<?php
+										}
+										?>
 										<?php echo $content; ?>
                                     </td>
                                 </tr>
@@ -395,7 +401,7 @@
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="content-block" style="padding-bottom:0px;">
-                                <span class="apple-link">تمامی حقوق مادی و معنوی محفوظ است</span>
+                                <span class="apple-link"><?php echo $footer_text; ?></span>
                             </td>
                         </tr>
                         <tr>

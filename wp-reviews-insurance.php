@@ -19,14 +19,22 @@ class WP_REVIEWS_INSURANCE {
 	 * @see get_instance()
 	 * @type object
 	 */
-	protected static $instance = null;
+	protected static $_instance = null;
+
+	/**
+	 * Plugin ENVIRONMENT
+	 *
+	 * @var string
+	 * @default production
+	 */
+	public static $ENVIRONMENT = 'development';
 
 	/**
 	 * URL to this plugin's directory.
 	 *
 	 * @type string
 	 */
-	public static $plugin_url = '';
+	public static $plugin_url;
 
 	/**
 	 * Path to this plugin's directory.
@@ -55,8 +63,8 @@ class WP_REVIEWS_INSURANCE {
 	 * @return  object of this class
 	 */
 	public static function get_instance() {
-		null === self::$instance and self::$instance = new self;
-		return self::$instance;
+		null === self::$_instance and self::$_instance = new self;
+		return self::$_instance;
 	}
 
 	/**
@@ -90,58 +98,15 @@ class WP_REVIEWS_INSURANCE {
 		include_once dirname( __FILE__ ) . '/vendor/autoload.php';
 
 		//Load Class
-		$autoload = array( 'Post_Type', 'Admin_Setting_Api', 'Admin_Page', 'Front', 'Comment', 'Ajax' );
+		$autoload = array( 'Post_Type', 'Core\\Admin_Setting_Api', 'Admin_Page', 'Front', 'Comment', 'Ajax', 'Core\\Utility' );
 		foreach ( $autoload as $class ) {
 			$class_name = '\WP_REVIEWS_INSURANCE\\' . $class;
 			new $class_name;
 		}
 
-		//Test Service
-		if ( isset( $_GET['test'] ) ) {
-			//self::send_mail('admin', 'عنوان ایمیل','matn email test');
-			//exit;
-		}
-	}
-
-	/**
-	 * Send Email
-	 *
-	 * @param $to
-	 * @param $subject
-	 * @param $content
-	 * @return bool
-	 */
-	public static function send_mail( $to, $subject, $content ) {
-
-		//Email Template
-		$email_template = wp_normalize_path( dirname( __FILE__ ) . '/template/email.php' );
-
-		//Set To Admin
-		if ( $to == "admin" ) {
-			$opt = get_option( 'wp_reviews_insurance_opt' );
-			//$to = 'opub.ir@gmail.com';
-			$to = $opt['modir_email'];
-		}
-
-		//Email from
-		$from_name  = 'نشرآنلاین';
-		$from_email = get_bloginfo( 'admin_email' );
-
-		//Template Arg
-		$template_arg = array(
-			'title'      => $subject,
-			'logo'       => plugins_url( '', __FILE__ ) . '/template/email.jpg',
-			'content'    => $content,
-			'site_url'   => home_url(),
-			'site_title' => 'نشر آنلاین',
-		);
-
-		//Send Email
-		try {
-			\WP_REVIEWS_INSURANCE\WP_Mail::init()->from( '' . $from_name . ' <' . $from_email . '>' )->to( $to )->subject( $subject )->template( $email_template, $template_arg )->send();
-			return true;
-		} catch ( Exception $e ) {
-			return false;
+		//Check $ENVIRONMENT Mode
+		if ( self::$ENVIRONMENT == "development" ) {
+			new \WP_REVIEWS_INSURANCE\Core\Debug();
 		}
 
 	}
