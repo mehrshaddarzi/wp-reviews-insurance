@@ -45,6 +45,21 @@
             vertical-align: top;
             text-align: <?php echo ($is_rtl ===true ? 'right' : 'left'); ?>;
             direction: <?php echo ($is_rtl ===true ? 'rtl' : 'ltr'); ?>;
+            padding: 8px;
+        }
+
+        table.widefat {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table.widefat td, table.widefat th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        table.widefat tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
 
         /* -------------------------------------
@@ -142,7 +157,6 @@
             margin: 0;
             margin-bottom: 7px;
             line-height: 35px;
-            color: #656565;
         }
 
         p li,
@@ -360,6 +374,7 @@
             direction: rtl;
             text-align: right;
         }
+
         <?php } ?>
     </style>
 </head>
