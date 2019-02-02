@@ -359,7 +359,6 @@
             direction: rtl;
             text-align: right;
         }
-
         <?php } ?>
     </style>
 </head>
