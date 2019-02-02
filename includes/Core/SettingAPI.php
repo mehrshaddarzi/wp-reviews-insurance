@@ -121,7 +121,8 @@ class SettingAPI {
 
 		//Create Option For First
 		foreach ( $this->settings_fields as $section => $field ) {
-			if ( get_option( $section ) === false and ! in_array( $section, $no_save_section ) ) {
+			$section_opt = get_option( $section );
+			if ( ( $section_opt === false || empty( $section_opt ) ) and ! in_array( $section, $no_save_section ) ) {
 				$value_list = array();
 				foreach ( $field as $option ) {
 					$default_value = '';
