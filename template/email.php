@@ -142,6 +142,7 @@
             margin: 0;
             margin-bottom: 7px;
             line-height: 35px;
+            color: #656565;
         }
 
         p li,
