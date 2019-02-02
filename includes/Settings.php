@@ -71,7 +71,8 @@ class Settings {
 			),
 			array(
 				'id'    => 'wp_plugin_help',
-				'title' => __( 'Help', 'wp-reviews-insurance' )
+				'title' => __( 'Help', 'wp-reviews-insurance' ),
+				'save'  => false
 			),
 		);
 
