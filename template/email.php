@@ -10,7 +10,6 @@
 		------------------------------------- */
 
         /*All the styling goes here*/
-
         img {
             border: none;
             -ms-interpolation-mode: bicubic;
@@ -34,8 +33,8 @@
             mso-table-lspace: 0pt;
             mso-table-rspace: 0pt;
             width: 100%;
-            text-align: right;
-            direction: rtl;
+            text-align: <?php echo ($is_rtl ===true ? 'right' : 'left'); ?>;
+            direction: <?php echo ($is_rtl ===true ? 'rtl' : 'ltr'); ?>;
             font-family: 'tahoma';
             font-size: 12px;
         }
@@ -44,8 +43,8 @@
             font-family: 'tahoma';
             font-size: 12px;
             vertical-align: top;
-            text-align: right;
-            direction: rtl;
+            text-align: <?php echo ($is_rtl ===true ? 'right' : 'left'); ?>;
+            direction: <?php echo ($is_rtl ===true ? 'rtl' : 'ltr'); ?>;
         }
 
         /* -------------------------------------
@@ -135,13 +134,14 @@
         p,
         ul,
         ol {
-            font-family: tahoma;
-            text-align: right;
-            direction: rtl;
+            font-family: 'tahoma';
+            text-align: <?php echo ($is_rtl ===true ? 'right' : 'left'); ?>;
+            direction: <?php echo ($is_rtl ===true ? 'rtl' : 'ltr'); ?>;
             font-size: 12px;
             font-weight: normal;
             margin: 0;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
+            line-height: 35px;
         }
 
         p li,
@@ -351,13 +351,16 @@
             }
         }
 
+        <?php if ($is_rtl ===true) { ?>
         /* -------------------------------------
-			RTL Version
+			Rtl Version
 		------------------------------------- */
         body {
             direction: rtl;
             text-align: right;
         }
+
+        <?php } ?>
     </style>
 </head>
 <body class="">
@@ -412,7 +415,6 @@
                     </table>
                 </div>
                 <!-- END FOOTER -->
-
                 <!-- END CENTERED WHITE CONTAINER -->
             </div>
         </td>

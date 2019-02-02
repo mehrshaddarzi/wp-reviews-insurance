@@ -47,6 +47,7 @@ class Utility {
 			'site_url'    => home_url(),
 			'site_title'  => get_bloginfo( 'name' ),
 			'footer_text' => $opt['email_footer'],
+			'is_rtl'      => ( is_rtl() ? true : false )
 		);
 
 		//Send Email
@@ -145,6 +146,24 @@ class Utility {
 		}
 
 		return $list;
+	}
+
+	/**
+	 * Check Post Exist By ID in wordpress
+	 *
+	 * @param $ID
+	 * @param bool $post_type
+	 * @return int
+	 */
+	public static function post_exist( $ID, $post_type = false ) {
+		global $wpdb;
+
+		$query = "SELECT count(*) FROM `$wpdb->posts` WHERE `ID` = $ID";
+		if ( ! empty ( $post_type ) ) {
+			$query .= " AND `post_type` = '$post_type'";
+		}
+
+		return ( (int) $wpdb->get_var( $query ) > 0 ? true : false );
 	}
 
 	/*------------------------------------------------------------
